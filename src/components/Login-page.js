@@ -1,8 +1,91 @@
-import React, { useState } from 'react'
+import React, { useRef, useState } from 'react'
 import Header1 from './Header1';
+import { checkValidData, checkValidDataSignUp } from '../utils/validate';
+import { auth } from '../utils/firebase';
+import { signInWithEmailAndPassword, createUserWithEmailAndPassword, updateProfile } from "firebase/auth";
+import { useNavigate } from 'react-router-dom';
+
+
 
 const Login  = () => {
     const [isSignIn, setIsSignIn] = useState(true);
+    const [message, setMessage] = useState(null);
+
+    const navigate = useNavigate();
+
+    const name = useRef(null);
+    const phonenumber = useRef(null);
+    const email = useRef(null);
+    const password = useRef(null);
+
+    const handleButtonClick = ()=>{
+       //Validate the form data
+
+       let msg;
+       // Validate based on whether it's Sign In or Sign Up
+       if (isSignIn) {
+           msg = checkValidData(email.current.value, password.current.value);
+       } else {
+           msg = checkValidDataSignUp(
+               email.current.value,
+               password.current.value,
+               name.current.value,
+               phonenumber.current.value
+           );
+       }
+
+       setMessage(msg);
+
+       if(msg) return;
+
+       if(!isSignIn){
+        // Sign up
+        createUserWithEmailAndPassword(auth, email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed up 
+    const user = userCredential.user;
+    console.log(user);
+    updateProfile(auth.currentUser, {
+        displayName: name.current.value
+      }).then(() => {
+        // Profile updated!
+        // ...
+      }).catch((error) => {
+        // An error occurred
+        // ...
+      });
+    navigate('/browse');
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    // ..
+  });
+
+       }
+       else{
+        //Sign in
+
+        signInWithEmailAndPassword(auth, email.current.value, password.current.value)
+  .then((userCredential) => {
+    // Signed in 
+    const user = userCredential.user;
+    console.log(user)
+    navigate('/browse');
+    // ...
+  })
+  .catch((error) => {
+    const errorCode = error.code;
+    const errorMessage = error.message;
+    setMessage(error.code+"-"+error.message)
+  });
+       }
+
+
+        
+       
+    }
 
     const toggleSignIn =()=>{
         setIsSignIn(!isSignIn)
@@ -16,37 +99,46 @@ const Login  = () => {
 
 
         </div>
-        <form className=' w-3/12 absolute bg-black my-36 p-12 mx-auto right-0 left-0 bg-opacity-75 '>
+        <form onSubmit={(e)=>e.preventDefault()}
+        className=' w-3/12 absolute bg-black my-36 p-12 mx-auto right-0 left-0 bg-opacity-75 '>
         <h1 className='text-white text-3xl font-bold mb-4'>
             {isSignIn ? 'Sign In' : 'Sign Up'}
         </h1>
         <input
+        ref={email}
          type='text' 
          placeholder='Email Address ' 
          className='py-2 m-2 w-full bg-gray-500'
          />
        {!isSignIn&&(
          <div>
-            <input 
+        <input 
+        ref={name}
          type='text'
           placeholder='Full Name' 
           className='py-2 m-2 w-full bg-gray-500'/>
           <input 
+          ref={phonenumber}
          type='number'
           placeholder='Phone Number' 
-          className='py-2 m-2 w-full bg-gray-500'/>
+        className='py-2 m-2 w-full bg-gray-500'/>
          </div>
           
 
           
        )}
         <input 
+        ref={password}
         type='password'
          placeholder='Password ' 
          className='py-2 m-2 w-full bg-gray-500'
          />
 
-        <button className='py-2 m-2 bg-red-600 text-white w-full'>
+         <p className='text-red-400 font-bold p-2'>{message}</p>
+
+        <button className='py-2 m-2 bg-red-600 text-white w-full'
+        onClick={handleButtonClick}
+        >
             {isSignIn ? 'Sign In' : 'Sign Up'}
         </button>
         <p className='py-6 text-white cursor-pointer'
