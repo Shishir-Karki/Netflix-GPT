@@ -54,7 +54,7 @@ const Login  = () => {
         // An error occurred
         // ...
       });
-    navigate('/browse');
+   
     // ...
   })
   .catch((error) => {
@@ -72,7 +72,7 @@ const Login  = () => {
     // Signed in 
     const user = userCredential.user;
     console.log(user)
-    navigate('/browse');
+   
     // ...
   })
   .catch((error) => {
