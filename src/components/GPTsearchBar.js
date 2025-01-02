@@ -14,7 +14,7 @@ const GPTsearchBar = () => {
     setError(null);
 
     try {
-      const response = await fetch('https://moviebuzz-3.onrender.com/api/movies/recommendations', {
+      const response = await fetch('http://localhost:5000/api/movies/recommendations', {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

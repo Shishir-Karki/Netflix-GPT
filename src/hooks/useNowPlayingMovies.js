@@ -3,19 +3,18 @@ import { API_OPTIONS } from "../utils/constants";
 import { addNowPlayingMovies } from "../utils/movieSlice";
 import { useEffect } from "react";
 
-const useNowPlayingMovies = () =>{
+const useNowPlayingMovies = () => {
   const dispatch = useDispatch();
 
-  const getPlayingMovies = async()=>{
-    const data = await fetch('https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1', API_OPTIONS)
-      const json = await data.json();
-    
-      dispatch(addNowPlayingMovies(json.results))
-  }
+  const getPlayingMovies = async () => {
+    const data = await fetch('https://api.themoviedb.org/3/movie/now_playing?language=en-US&page=1', API_OPTIONS);
+    const json = await data.json();
+    dispatch(addNowPlayingMovies(json.results));
+  };
 
-  useEffect(()=>{
+  useEffect(() => {
     getPlayingMovies();
-  },[])
-}
+  }, []);
+};
 
 export default useNowPlayingMovies;

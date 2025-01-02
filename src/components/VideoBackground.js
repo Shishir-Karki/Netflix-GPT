@@ -11,8 +11,6 @@ const VideoBackground = ({ movieId }) => {
         try {
             const data = await fetch(`https://api.themoviedb.org/3/movie/${movieId}/videos?language=en-US`, API_OPTIONS);
             const json = await data.json();
-           
-
             const filteredData = json.results.filter((video) => video.name === "Official Trailer");
             const mainTrailer = filteredData.length ? filteredData[0] : json.results[0];
             if (mainTrailer) {
@@ -25,13 +23,13 @@ const VideoBackground = ({ movieId }) => {
 
     useEffect(() => {
         trailer();
-    }, [movieId]);  // Include movieId as a dependency in case it changes
+    }, [movieId]);
 
     return (
         <div className="w-screen">
             {trailerVideo && trailerVideo?.key ? (
                 <iframe
-                    className="w-screen aspect-video "
+                    className="w-screen aspect-video"
                     src={`${YT_URL}${trailerVideo?.key}?autoplay=1&mute=1`}
                     title="YouTube video player"
                     allow="accelerometer; autoplay=1; clipboard-write; encrypted-media; gyroscope; picture-in-picture; web-share"
